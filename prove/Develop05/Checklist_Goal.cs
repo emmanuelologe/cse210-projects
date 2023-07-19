@@ -24,7 +24,7 @@ public class ChecklistGoal : Goal
     }
 
     private bool IsBonusAchieved() => _timesCompleted >= _requiredTimes;
-    private int GetBonusPoints() => 500; // Example bonus points, you can adjust this as needed.
+    private int GetBonusPoints() => 100; 
 
     public override void DisplayGoalStatus()
     {

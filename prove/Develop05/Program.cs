@@ -111,7 +111,7 @@ class Program
         {
             using (StreamWriter writer = new StreamWriter(filePath))
             {
-                writer.WriteLine(userScore); // Save the user's score first
+                writer.WriteLine(userScore); 
                 foreach (var goal in goals)
                 {
                     string goalType = goal.GetType().Name;
@@ -136,53 +136,7 @@ class Program
         Console.Write("Enter the file path to load the goals and scores: ");
         string filePath = Console.ReadLine();
 
-        try
-        {
-            goals.Clear();
-            using (StreamReader reader = new StreamReader(filePath))
-            {
-                if (int.TryParse(reader.ReadLine(), out int loadedUserScore))
-                {
-                    userScore = loadedUserScore; // Set the user's score from the file
-
-                    string line;
-                    while ((line = reader.ReadLine()) != null)
-                    {
-                        string[] data = line.Split(',');
-                        string goalType = data[0];
-                        string name = data[1];
-                        string description = data[2];
-                        bool isCompleted = bool.Parse(data[3]);
-
-                        switch (goalType)
-                        {
-                            case nameof(SimpleGoal):
-                                goals.Add(new SimpleGoal(name, description, 0, isCompleted));
-                                break;
-                            case nameof(EternalGoal):
-                                goals.Add(new EternalGoal(name, description, 0, isCompleted));
-                                break;
-                            case nameof(ChecklistGoal):
-                                goals.Add(new ChecklistGoal(name, description, 0, 0, isCompleted));
-                                break;
-                            default:
-                                Console.WriteLine("Unknown goal type found in file.");
-                                break;
-                        }
-                    }
-                }
-                else
-                {
-                    Console.WriteLine("Invalid file format. Couldn't load goals and scores.");
-                }
-            }
-
-            Console.WriteLine("Goals and scores loaded successfully.");
-        }
-        catch (Exception ex)
-        {
-            Console.WriteLine("Error occurred while loading goals and scores: " + ex.Message);
-        }
+        
     }
 
     static void RecordAnEvent()
@@ -198,7 +152,7 @@ class Program
         Console.Write("Enter the index of the goal you want to record an event for: ");
         int index = int.Parse(Console.ReadLine()) -1;
 
-        if (index < 0 || index >= goals.Count)
+        if (index < 0 | index >= goals.Count)
         {
             Console.WriteLine("Invalid goal index.");
             return;
