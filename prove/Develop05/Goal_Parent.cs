@@ -11,19 +11,14 @@ public abstract class Goal
     public string Description => _description;
     public bool IsCompleted => _isCompleted;
 
-    public Goal(string name, string description)
+    public Goal(string name, string description, bool isCompleted)
     {
         _name = name;
         _description = description;
-        _isCompleted = false;
+        _isCompleted = isCompleted;
     }
 
     public abstract int GetPointsEarned();
-
-    public virtual void MarkCompleted()
-    {
-        _isCompleted = true;
-    }
-
+    public virtual void MarkCompleted() => _isCompleted = true;
     public abstract void DisplayGoalStatus();
 }

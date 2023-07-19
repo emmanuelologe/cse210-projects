@@ -4,7 +4,7 @@ public class ChecklistGoal : Goal
     private int _requiredTimes;
     private int _timesCompleted;
 
-    public ChecklistGoal(string name, string description, int pointsPerRecord, int requiredTimes) : base(name, description)
+    public ChecklistGoal(string name, string description, int pointsPerRecord, int requiredTimes, bool isCompleted) : base(name, description, isCompleted)
     {
         _pointsPerRecord = pointsPerRecord;
         _requiredTimes = requiredTimes;
@@ -13,7 +13,8 @@ public class ChecklistGoal : Goal
 
     public override int GetPointsEarned()
     {
-        return _isCompleted ? (_pointsPerRecord * _timesCompleted) + (IsBonusAchieved() ? GetBonusPoints() : 0) : 0;
+        if (!_isCompleted) return 0;
+        return (_pointsPerRecord * _timesCompleted) + (IsBonusAchieved() ? GetBonusPoints() : 0);
     }
 
     public override void MarkCompleted()
@@ -22,25 +23,14 @@ public class ChecklistGoal : Goal
         base.MarkCompleted();
     }
 
-    private bool IsBonusAchieved()
-    {
-        return _timesCompleted >= _requiredTimes;
-    }
-
-    private int GetBonusPoints()
-    {
-        return 500; // Example bonus points, you can adjust this as needed.
-    }
+    private bool IsBonusAchieved() => _timesCompleted >= _requiredTimes;
+    private int GetBonusPoints() => 500; // Example bonus points, you can adjust this as needed.
 
     public override void DisplayGoalStatus()
     {
         if (_isCompleted)
-        {
             Console.WriteLine($"Completed {_timesCompleted}/{_requiredTimes} times - {_name} - {_description}");
-        }
         else
-        {
             Console.WriteLine($"[ ] {_name} - {_description}");
-        }
     }
 }

@@ -2,7 +2,7 @@ using System;
 
 class Program
 {
-    static List<Goal> goals = new List<Goal>();
+     static List<Goal> goals = new List<Goal>();
     static int userScore = 0;
 
     static void Main()
@@ -54,12 +54,13 @@ class Program
 
     static void CreateNewGoal()
     {
+        Console.WriteLine("Choose the type of goal:");
         Console.WriteLine("1. Simple Goal");
         Console.WriteLine("2. Eternal Goal");
         Console.WriteLine("3. Checklist Goal");
 
-        Console.Write("Enter the type of goal you want to create: ");
-        int goalType = int.Parse(Console.ReadLine());
+        Console.Write("Enter your choice: ");
+        int choice = int.Parse(Console.ReadLine());
 
         Console.Write("Enter the name of the goal: ");
         string name = Console.ReadLine();
@@ -67,42 +68,33 @@ class Program
         Console.Write("Enter the description of the goal: ");
         string description = Console.ReadLine();
 
-        int points = 0;
-        int requiredTimes = 0;
-
-        switch (goalType)
+        switch (choice)
         {
             case 1:
-                Console.Write("Enter the points for completing this goal: ");
-                points = int.Parse(Console.ReadLine());
-                goals.Add(new SimpleGoal(name, description, points));
+                Console.Write("Enter the number of points for the simple goal: ");
+                int points = int.Parse(Console.ReadLine());
+                goals.Add(new SimpleGoal(name, description, points, false));
                 break;
             case 2:
-                Console.Write("Enter the points for each record of this goal: ");
-                points = int.Parse(Console.ReadLine());
-                goals.Add(new EternalGoal(name, description, points));
+                Console.Write("Enter the number of points per record for the eternal goal: ");
+                int pointsPerRecord = int.Parse(Console.ReadLine());
+                goals.Add(new EternalGoal(name, description, pointsPerRecord, false));
                 break;
             case 3:
-                Console.Write("Enter the points for each record of this goal: ");
-                points = int.Parse(Console.ReadLine());
-                Console.Write("Enter the required number of times to complete this goal: ");
-                requiredTimes = int.Parse(Console.ReadLine());
-                goals.Add(new ChecklistGoal(name, description, points, requiredTimes));
+                Console.Write("Enter the number of points per record for the checklist goal: ");
+                int pointsPerRecordChecklist = int.Parse(Console.ReadLine());
+                Console.Write("Enter the required number of times to complete the checklist goal: ");
+                int requiredTimes = int.Parse(Console.ReadLine());
+                goals.Add(new ChecklistGoal(name, description, pointsPerRecordChecklist, requiredTimes, false));
                 break;
             default:
-                Console.WriteLine("Invalid goal type.");
+                Console.WriteLine("Invalid choice. Goal not created.");
                 break;
         }
     }
 
     static void ShowListOfCreatedGoals()
     {
-        if (goals.Count == 0)
-        {
-            Console.WriteLine("No goals created yet.");
-            return;
-        }
-
         Console.WriteLine("List of created goals:");
         foreach (var goal in goals)
         {
@@ -112,74 +104,86 @@ class Program
 
     static void SaveUsersGoalsAndScores()
     {
-        Console.Write("Enter the file name to save the goals and scores: ");
-    string filePath = Console.ReadLine();
+        Console.Write("Enter the file path to save the goals and scores: ");
+        string filePath = Console.ReadLine();
 
-    
-    using (StreamWriter writer = new StreamWriter(filePath))
-    {
-
-        writer.WriteLine($"UserScore: {userScore}");
-
-
-        foreach (var goal in goals)
+        try
         {
-            string goalType = goal.GetType().Name;
-            string name = goal.Name;
-            string description = goal.Description;
-            bool isCompleted = goal.IsCompleted;
-            writer.WriteLine($"{goalType},{name},{description},{isCompleted}");
-        }
-    }
-    Console.WriteLine("Goals and scores saved successfully.");
+            using (StreamWriter writer = new StreamWriter(filePath))
+            {
+                writer.WriteLine(userScore); // Save the user's score first
+                foreach (var goal in goals)
+                {
+                    string goalType = goal.GetType().Name;
+                    string name = goal.Name;
+                    string description = goal.Description;
+                    bool isCompleted = goal.IsCompleted;
 
+                    writer.WriteLine($"{goalType},{name},{description},{isCompleted}");
+                }
+            }
+
+            Console.WriteLine("Goals and scores saved successfully.");
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine("Error occurred while saving goals and scores: " + ex.Message);
+        }
     }
 
     static void LoadUsersScoresAndGoals()
     {
         Console.Write("Enter the file path to load the goals and scores: ");
-    string filePath = Console.ReadLine();
+        string filePath = Console.ReadLine();
 
-    
-    goals.Clear();
-    using (StreamReader reader = new StreamReader(filePath))
-    {
-        if (int.TryParse(reader.ReadLine(), out int loadedUserScore))
+        try
         {
-            userScore = loadedUserScore; // Set the user's score from the file
-            string line;
-            while ((line = reader.ReadLine()) != null)
+            goals.Clear();
+            using (StreamReader reader = new StreamReader(filePath))
             {
-                string[] data = line.Split(',');
-                string goalType = data[0];
-                string name = data[1];
-                string description = data[2];
-                bool isCompleted = bool.Parse(data[3]);
-                switch (goalType)
+                if (int.TryParse(reader.ReadLine(), out int loadedUserScore))
                 {
-                    case nameof(SimpleGoal):
-                        goals.Add(new SimpleGoal(name, description, 0, isCompleted));
-                        break;
-                    case nameof(EternalGoal):
-                        goals.Add(new EternalGoal(name, description, 0, isCompleted));
-                        break;
-                    case nameof(ChecklistGoal):
-                        goals.Add(new ChecklistGoal(name, description, 0, 0, isCompleted));
-                        break;
-                    default:
-                        Console.WriteLine("Unknown goal type found in file.");
-                        break;
+                    userScore = loadedUserScore; // Set the user's score from the file
+
+                    string line;
+                    while ((line = reader.ReadLine()) != null)
+                    {
+                        string[] data = line.Split(',');
+                        string goalType = data[0];
+                        string name = data[1];
+                        string description = data[2];
+                        bool isCompleted = bool.Parse(data[3]);
+
+                        switch (goalType)
+                        {
+                            case nameof(SimpleGoal):
+                                goals.Add(new SimpleGoal(name, description, 0, isCompleted));
+                                break;
+                            case nameof(EternalGoal):
+                                goals.Add(new EternalGoal(name, description, 0, isCompleted));
+                                break;
+                            case nameof(ChecklistGoal):
+                                goals.Add(new ChecklistGoal(name, description, 0, 0, isCompleted));
+                                break;
+                            default:
+                                Console.WriteLine("Unknown goal type found in file.");
+                                break;
+                        }
+                    }
+                }
+                else
+                {
+                    Console.WriteLine("Invalid file format. Couldn't load goals and scores.");
                 }
             }
+
+            Console.WriteLine("Goals and scores loaded successfully.");
         }
-        else
+        catch (Exception ex)
         {
-            Console.WriteLine("Invalid file format. Couldn't load goals and scores.");
+            Console.WriteLine("Error occurred while loading goals and scores: " + ex.Message);
         }
     }
-    Console.WriteLine("Goals and scores loaded successfully.");
-    
-}
 
     static void RecordAnEvent()
     {
