@@ -5,18 +5,18 @@ class Order
 {
     private List<Product> _products;
     private Customer _customer;
-    private decimal _shippingCost;
+    private int _shippingCost;
 
     public Order(Customer customer, List<Product> products)
     {
         _customer = customer;
         _products = products;
-        _shippingCost = _customer.InUSA() ? 5.0m : 35.0m;
+        _shippingCost = _customer.InUSA() ? 5 : 35;
     }
 
-    public decimal CalculateTotalCost()
+    public int CalculateTotalCost()
     {
-        decimal totalCost = _shippingCost;
+        int totalCost = _shippingCost;
 
         foreach (var product in _products)
         {
